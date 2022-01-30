@@ -52,9 +52,9 @@ class Cifrador():
         @return una lista con las n evaluaciones(puntos) """
 
         p = 208351617316091241234326746312124448251235562226470491514186331217050270460481
-        coefs = [randint(0,p) for i in range(self.evals_min - 1)]
-        coefs = [p] + coefs 
-        return [(i,self._horner(i, coefs)) for i in range(1, self.evals + 1)]
+        coefs = [randint(1,p) for i in range(self.evals_min - 1)]
+        coefs = [int.from_bytes(self.key)] + coefs 
+        return [(i, self._horner(i, coefs) % p) for i in range(1, self.evals + 1)]
 
 
     def _horner(self, x: int, coefs: List[int]) -> int:
