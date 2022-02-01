@@ -20,12 +20,12 @@ class Tests(unittest.TestCase):
         self.assertRaises(Exception, Cifrador, 'proba', 5, 7)
 
 
-    def test_cifrar(self):
-        criptograma, evaluaciones = self.c.cifrar()
-        self.assertIsInstance(criptograma, bytes)
-        self.assertEqual(len(evaluaciones), 8)
-        for eval in evaluaciones:
-            self.assertIsInstance(eval[1], int)
+    def test_cifra_aes(self):
+        """! Test unitario para encriptar data con AES"""
+
+        self.c._cifra_aes
+
+
 
     @given(st.integers())
     def test_horner(self, x):

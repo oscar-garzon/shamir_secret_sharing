@@ -37,7 +37,7 @@ class Cifrador():
         self.doc_claro = doc_claro 
 
 
-    def cifrar(self) -> Tuple[bytes, List[Punto]]:
+    def cifrar(self) -> Tuple[Tuple[bytes, bytes], List[Punto]]:
         """! Cifra self.doc usando self.key y construye un polinomio de
         grado self.evals_min - 1 con self.key como término independiente
 
@@ -53,8 +53,10 @@ class Cifrador():
 
         p = 208351617316091241234326746312124448251235562226470491514186331217050270460481
         coefs = [randint(1,p) for i in range(self.evals_min - 1)]
-        coefs = [int.from_bytes(self.key)] + coefs 
-        return [(i, self._horner(i, coefs) % p) for i in range(1, self.evals + 1)]
+        coefs = [int.from_bytes(self.key, byteorder='big')] + coefs
+
+        evals = [(i, self._horner(i, coefs) % p) for i in range(1, self.evals + 1)]
+        return evals
 
 
     def _horner(self, x: int, coefs: List[int]) -> int:
@@ -75,13 +77,25 @@ class Cifrador():
         return result
 
 
-    def _cifra_aes(self) -> bytes:
-        """! Regresa una string con el criptograma. Se encripta
-        usando el mecanismo de cifrado simétrico AES.
+    def _cifra_aes(self) -> Tuple[bytes, bytes]:
+        """! NOOO -Regresa una string con el criptograma. Se encripta
+        usando el mecanismo de cifrado simétrico AES. -NOO
 
-        @return el criptograma"""
-        cipher = AES.new(self.key, AES.MODE_CBC)
-        return cipher.encrypt(pad(bytes(self.doc_claro, 'utf8'), AES.block_size))
+        Encripta self.doc_claro y lo salva en el disco duro 
+
+        @return el criptograma y tag"""
+        # cipher = AES.new(self.key, AES.MODE_CBC)
+        # return cipher.encrypt(pad(bytes(self.doc_claro, 'utf8'), AES.block_size))
 
 
+        data = b'secret data'
+
+        cipher = AES.new(self.key, AES.MODE_EAX)
+        ciphertext, tag = cipher.encrypt_and_digest(data)
+
+        file_out = open("encrypted.bin", "wb")
+        [ file_out.write(x) for x in (cipher.nonce, tag, ciphertext) ]
+        file_out.close()
+
+        return (ciphertext, tag)
         
