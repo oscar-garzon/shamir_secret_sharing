@@ -42,6 +42,25 @@ class TestMain(unittest.TestCase):
             self.assertEqual(s, d.descifra())
 
         cifrar_descifrar()
-        
+
+
+#Este test hazlo desde programa principal. Truena cuando las
+#evaluaciones son menos de las requeridas entonces, el int no
+#se puede transformar a bytes
+#    @patch('builtins.input', lambda _: 'sinaloa')    
+    # def test_key_incorrecta(self):
+    #     c = Cifrador('hola bebe', 6,3)
+    #     cripto, eval = c.cifrar()
+
+    #     #Número insuficiente de evaluaciones
+    #     d = Descifrador(eval[:2], 'encrypted.bin') <- aquí truena
+    #     self.assertRaises((ValueError, OverflowError), d.descifra)
+
+    #     #Evaluaciones suficientes pero incorrectas
+    #     eval_incorrectas = [(x, y +5) for (x,y) in eval]
+    #     d = Descifrador(eval_incorrectas, 'encrypted.bin')
+    #     self.assertRaises((ValueError, OverflowError), d.descifra )
+
+
 if __name__ == '__main__':
     unittest.main()

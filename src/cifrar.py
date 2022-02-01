@@ -5,6 +5,7 @@ contraseña segura"""
 import hashlib
 from typing import Tuple, List
 from random import randint
+from getpass import getpass
 
 from Crypto.Cipher import AES 
 from Crypto.Util.Padding import pad
@@ -32,7 +33,7 @@ class Cifrador():
 
         self.evals = evals
         self.evals_min = evals_min
-        contra = input("Escriba una contraseña para generar encriptación: ")
+        contra = getpass(prompt="Escriba una contraseña para generar encriptación: ")
         self.key = hashlib.sha256(bytes(contra, 'utf8')).digest()
         self.doc_claro = doc_claro 
 

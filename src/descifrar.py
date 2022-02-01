@@ -4,14 +4,14 @@ from Crypto.Cipher import AES
 Punto = Tuple[int, int]
 
 class Descifrador():
-    def __init__(self, puntos: List[Punto], criptograma: bytes ):
+    def __init__(self, puntos: List[Punto], criptograma: str ):
         """! Constructor de la clase Descifrador.
-        Cuando se llama al constructor se obtiene la llave par descifrar el
+        Cuando se llama al constructor se obtiene la llave para descifrar el
         criptograma.
 
         @param puntos una lista con los t puntos necesarios para reconstruir
         el polinomio.
-        @param criptograma el documento a descifrar"""
+        @param criptograma el path al documento encriptado"""
 
         self.puntos = puntos
         self.criptograma = criptograma
@@ -43,7 +43,7 @@ class Descifrador():
         for i in range(len(self.puntos)):
             result += self.puntos[i][1] * self._evalua_poli(i)
         result = result % 208351617316091241234326746312124448251235562226470491514186331217050270460481
-        return result  
+        return result
 
 
     def _evalua_poli(self, indx) -> int:
