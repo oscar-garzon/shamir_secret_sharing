@@ -27,6 +27,7 @@ class Descifrador():
 
         file_in = open(self.criptograma, "rb")
         nonce, tag, ciphertext = [ file_in.read(x) for x in (16, 16, -1) ]
+        file_in.close()
 
         # let's assume that the key is somehow available again
         cipher = AES.new(self.key, AES.MODE_EAX, nonce)
