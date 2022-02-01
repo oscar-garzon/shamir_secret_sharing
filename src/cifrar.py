@@ -88,10 +88,10 @@ class Cifrador():
         # return cipher.encrypt(pad(bytes(self.doc_claro, 'utf8'), AES.block_size))
 
 
-        data = b'secret data'
+#        data = b'secret data'
 
         cipher = AES.new(self.key, AES.MODE_EAX)
-        ciphertext, tag = cipher.encrypt_and_digest(data)
+        ciphertext, tag = cipher.encrypt_and_digest(bytes(self.doc_claro, 'utf8'))
 
         file_out = open("encrypted.bin", "wb")
         [ file_out.write(x) for x in (cipher.nonce, tag, ciphertext) ]

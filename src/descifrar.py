@@ -1,4 +1,5 @@
 from typing import List, Tuple
+from Crypto.Cipher import AES 
 
 Punto = Tuple[int, int]
 
