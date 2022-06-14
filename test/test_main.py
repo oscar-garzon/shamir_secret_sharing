@@ -29,12 +29,12 @@ class TestMain(unittest.TestCase):
 
 
     @given(st.text(), st.text())
-    def test_cifrar_descifrar(self, s, psw):    
+    def test_cifrar_descifrar(self, s, psw):
+        """! Test para verificar que el mensaje encriptado es igual al
+            desencriptado"""
 
         @patch('builtins.input', lambda _: psw)
         def cifrar_descifrar():
-            """! Test para verificar que el mensaje encriptado es igual al
-            desencriptado"""
             c = Cifrador(s, 8, 4)
             cripto, eval = c.cifrar()
 

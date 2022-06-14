@@ -22,19 +22,17 @@ def cifrar(doc_evaluaciones: str, evals: int, evals_min: int, doc_claro: str) ->
     if evals_min < 1 or evals_min > evals:
         print('El número mínimo de puntos necesarios para descrifrar es 1 < t <= n')
 
-    #Leo el documento claro
-    with open(f"{doc_claro}") as archivo:
+    with open(doc_claro) as archivo:
         texto = archivo.read()
 
-    #Cifro el documento
-    c = Cifrador(texto, evals, evals_min)
-    criptograma, evaluaciones = c.cifrar()
+    c = Cifrador(evals, evals_min)
+    cipher, evaluaciones = c.obtener()
+    ciphertext, tag = cipher.encrypt_and_digest(bytes(texto, 'utf8'))
 
-    
-    # Escribo el criptograma
-    escribir_archivo(doc_evaluaciones, 'aes', criptograma)
+    file_out = open("encrypted.bin", "wb")
+    [ file_out.write(x) for x in (cipher.nonce, tag, ciphertext) ]
+    file_out.close()
 
-    #Escribo las evaluaciones
     escribir_archivo(doc_evaluaciones, 'frg', list_to_string(evaluaciones))
 
 

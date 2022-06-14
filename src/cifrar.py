@@ -1,28 +1,23 @@
-"""Clase para cifrar un documento dado. Se utiliza el estandar
-de cifrado AES. Y la función hash SHA-256 para generar una
-contraseña segura"""
+"""! Clase para generar un cifrador y las evaluacioines requeridas para
+reconstruir la llave del cifrador"""
 
 import hashlib
 from typing import Tuple, List
 from random import randint
 from getpass import getpass
 
-from Crypto.Cipher import AES 
-from Crypto.Util.Padding import pad
+from Crypto.Cipher import AES
 
 
 class Cifrador():
 
     Punto = Tuple[int, int]
 
-    #tal vez haga un getter setter para el documento
-
-    def __init__(self, doc_claro: str, evals: int, evals_min: int ):
+    def __init__(self, evals: int, evals_min: int ):
         """! Construye un cifrador con todas sus propiedades.
         Pide al usuario generar una contraseña. A esta contraseña
         se le aplica SHA-256 y esta se guarda  en self.key
 
-        @param doc_claro El documento claro que se va a cifrar.
         @param evals el número total de evaluaciones que se van a crear.
         @param evals_min el número mínimo de evaluaciones requeridas para
         descifrar el documento
@@ -33,19 +28,25 @@ class Cifrador():
 
         self.evals = evals
         self.evals_min = evals_min
-        contra = getpass(prompt="Escriba una contraseña para generar encriptación: ")
+        contra = input("Escriba una contraseña para generar encriptación: ")
         self.key = hashlib.sha256(bytes(contra, 'utf8')).digest()
-        self.doc_claro = doc_claro 
 
 
-    def cifrar(self) -> Tuple[Tuple[bytes, bytes], List[Punto]]:
-        """! Cifra self.doc usando self.key y construye un polinomio de
-        grado self.evals_min - 1 con self.key como término independiente
+    def obtener(self) -> Tuple[str, List[Punto]]:
+        """! Regresa un cifrador y {eval} evaluaciones del polinomio
 
         @return una tupla con el criptograma y las evaluaciones del polinomio"""
 
-        return (self._cifra_aes(), self._obtener_evaluaciones())
+        return (AES.new(self.key, AES.MODE_EAX), self._obtener_evaluaciones())
 
+        # cipher = AES.new(self.key, AES.MODE_EAX)
+        # ciphertext, tag = cipher.encrypt_and_digest(bytes(self.doc_claro, 'utf8'))
+
+        # file_out = open("encrypted.bin", "wb")
+        # [ file_out.write(x) for x in (cipher.nonce, tag, ciphertext) ]
+        # file_out.close()
+
+        # return (ciphertext, tag)
 
     def _obtener_evaluaciones(self) -> List[Punto]:
         """! Regresa las n evaluaciones(puntos) del polinomio
@@ -77,26 +78,4 @@ class Cifrador():
             result = (result * x) + coefs[i]
         return result
 
-
-    def _cifra_aes(self) -> Tuple[bytes, bytes]:
-        """! NOOO -Regresa una string con el criptograma. Se encripta
-        usando el mecanismo de cifrado simétrico AES. -NOO
-
-        Encripta self.doc_claro y lo salva en el disco duro 
-
-        @return el criptograma y tag"""
-        # cipher = AES.new(self.key, AES.MODE_CBC)
-        # return cipher.encrypt(pad(bytes(self.doc_claro, 'utf8'), AES.block_size))
-
-
-#        data = b'secret data'
-
-        cipher = AES.new(self.key, AES.MODE_EAX)
-        ciphertext, tag = cipher.encrypt_and_digest(bytes(self.doc_claro, 'utf8'))
-
-        file_out = open("encrypted.bin", "wb")
-        [ file_out.write(x) for x in (cipher.nonce, tag, ciphertext) ]
-        file_out.close()
-
-        return (ciphertext, tag)
         
