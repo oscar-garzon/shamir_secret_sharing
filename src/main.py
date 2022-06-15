@@ -1,14 +1,15 @@
 """! Punto de entrada del programa. Se realizan operaciones de alto nivel
 para cifrar y descifrar"""
 
-from typing import List
+from typing import List, Tuple
+import json
 
 from cifrar import Cifrador
-from utils import escribir_archivo, list_to_str
+from utils import escribir_fragmentos
 
 
 def cifrar(doc_evaluaciones: str, evals: int, evals_min: int, doc_claro: str) -> None:
-    """! Guarda el criptograma de doc_claro y el archivo donde están las
+    """! Guarda  doc_claro cifrado y el archivo donde están las
     evaluaciones del polinomio con el nombre {doc_evaluaciones}.
 
     @param doc_evaluaciones el nombre del archivo en el que seran guardas
@@ -22,18 +23,21 @@ def cifrar(doc_evaluaciones: str, evals: int, evals_min: int, doc_claro: str) ->
     if evals_min < 1 or evals_min > evals:
         print('El número mínimo de puntos necesarios para descrifrar es 1 < t <= n')
 
-    with open(doc_claro) as archivo:
-        texto = archivo.read()
+    with open(doc_claro, 'rb') as archivo:
+        doc_bytes = archivo.read()
 
     c = Cifrador(evals, evals_min)
-    cipher, evaluaciones = c.obtener()
-    ciphertext, tag = cipher.encrypt_and_digest(bytes(texto, 'utf8'))
 
-    file_out = open("encrypted.bin", "wb")
-    [ file_out.write(x) for x in (cipher.nonce, tag, ciphertext) ]
-    file_out.close()
+    
+    fragmentos = c.obtener_evaluaciones()
+    resultado = c.cifrar(doc_claro)
 
-    escribir_archivo(doc_evaluaciones, 'frg', list_to_string(evaluaciones))
+    archivo_cifrado = doc_claro.split('.')[0] + '.aes'
+
+    with open(archivo_cifrado, 'w') as output:
+        json.dump(resultado, output, indent=6)
+
+    escribir_fragmentos(fragmentos, doc_evaluaciones)
 
 
 def descifrar(doc_evaluaciones: str, doc_cifrado: str) -> None:
@@ -41,7 +45,9 @@ def descifrar(doc_evaluaciones: str, doc_cifrado: str) -> None:
 
     @param doc_evaluaciones el nombre del documento con, al menos, t de las n evaluaciones requeridas.
     @param doc_cifrado el nombre del archivo cifrado."""
+    return -1 
 
-    
+cifrar('prueba_evaluaciones', 10, 4, 'prueba.txt')
+  
 
 

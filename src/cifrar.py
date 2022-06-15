@@ -2,8 +2,9 @@
 reconstruir la llave del cifrador"""
 
 import hashlib
-from typing import Tuple, List
+from typing import Dict, Tuple, List
 from random import randint
+from base64 import b64encode
 from getpass import getpass
 
 from Crypto.Cipher import AES
@@ -30,25 +31,43 @@ class Cifrador():
         self.evals_min = evals_min
         contra = input("Escriba una contraseña para generar encriptación: ")
         self.key = hashlib.sha256(bytes(contra, 'utf8')).digest()
+        self.cipher = AES.new(self.key, AES.MODE_GCM)
 
 
-    def obtener(self) -> Tuple[str, List[Punto]]:
-        """! Regresa un cifrador y {eval} evaluaciones del polinomio
+    def cifrar(self, doc_claro: str) -> Dict:
+        """Regresa un diccionario con cipher.nonce, header,
+        ciphertext y tag"""
 
-        @return una tupla con el criptograma y las evaluaciones del polinomio"""
+        with open(doc_claro, 'rb') as doc:
+            doc_bytes = doc.read()
 
-        return (AES.new(self.key, AES.MODE_EAX), self._obtener_evaluaciones())
+        header = bytes(doc_claro, 'utf-8')
+        data = doc_bytes
+        self.cipher.update(header)
+        ciphertext, tag = self.cipher.encrypt_and_digest(data)
 
-        # cipher = AES.new(self.key, AES.MODE_EAX)
-        # ciphertext, tag = cipher.encrypt_and_digest(bytes(self.doc_claro, 'utf8'))
+        json_k = [ 'nonce', 'header', 'ciphertext', 'tag' ]
+        json_v = [ b64encode(x).decode('utf-8') for x in [self.cipher.nonce, header, ciphertext, tag ]]
+        return dict(zip(json_k, json_v))
 
-        # file_out = open("encrypted.bin", "wb")
-        # [ file_out.write(x) for x in (cipher.nonce, tag, ciphertext) ]
-        # file_out.close()
+        
+    # def obtener(self) -> Tuple[str, List[Punto]]:
+    #     """! Regresa un cifrador y {eval} evaluaciones del polinomio
 
-        # return (ciphertext, tag)
+    #     @return una tupla con el criptograma y las evaluaciones del polinomio"""
 
-    def _obtener_evaluaciones(self) -> List[Punto]:
+    #     return (AES.new(self.key, AES.MODE_GCM), self._obtener_evaluaciones())
+
+    #     # cipher = AES.new(self.key, AES.MODE_EAX)
+    #     # ciphertext, tag = cipher.encrypt_and_digest(bytes(self.doc_claro, 'utf8'))
+
+    #     # file_out = open("encrypted.bin", "wb")
+    #     # [ file_out.write(x) for x in (cipher.nonce, tag, ciphertext) ]
+    #     # file_out.close()
+
+    #     # return (ciphertext, tag)
+
+    def obtener_evaluaciones(self) -> List[Punto]:
         """! Regresa las n evaluaciones(puntos) del polinomio
 
         @return una lista con las n evaluaciones(puntos) """

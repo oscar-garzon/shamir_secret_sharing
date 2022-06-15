@@ -7,28 +7,28 @@ from hypothesis import example, given, strategies as st
 sys.path.append(os.getcwd())
 
 from src.descifrar import Descifrador
-from src.utils import horner
+#from src.utils import horner
 
 class TestCifrador(unittest.TestCase):
     """! Clase para pruebas unitarias de la clase {@link Descifrador}"""
 
 
-    def setUp(self):
-        """ Crea una descifrador y le da un criptograma a descifrar"""
-        self.c = Descifrador([(1,13),(2,38),(3,93),(4,190)], 'encrypted.bin')
+    # def setUp(self):
+    #     """ Crea una descifrador y le da un criptograma a descifrar"""
+    #     self.c = Descifrador([(1,13),(2,38),(3,93),(4,190)], 'encrypted.bin')
 
     
-    def test_evalua_poli(self):
-        """ Test unitario para _evalua_poli"""
+    # def test_evalua_poli(self):
+    #     """ Test unitario para _evalua_poli"""
 
-        self.assertEqual(self.c._evalua_poli(0), 4)
-        self.assertEqual(self.c._evalua_poli(1), -6)
-        self.assertEqual(self.c._evalua_poli(2), 4)
-        self.assertEqual(self.c._evalua_poli(3), -1)
+    #     self.assertEqual(self.c._evalua_poli(0), 4)
+    #     self.assertEqual(self.c._evalua_poli(1), -6)
+    #     self.assertEqual(self.c._evalua_poli(2), 4)
+    #     self.assertEqual(self.c._evalua_poli(3), -1)
 
 
     @given(st.integers(min_value = 1), st.integers(min_value = 1), st.integers(min_value = 1), st.integers(min_value = 1))
-    def test_get_key(self, x, y, z, k):
+    def test_get_key(self, k, x1, x2, x3):
         """! Test unitario para ver si _get_key regresa la key correcta.
         Se construye un polinomio con coeficientes aleatorios. Se evaluan
         r puntos y con estos se construye un Descifrador. Se espera que
@@ -36,9 +36,9 @@ class TestCifrador(unittest.TestCase):
         p = 208351617316091241234326746312124448251235562226470491514186331217050270460481
         evaluaciones = []
         for i in range(1,5):
-            valor = k + z*i + y*i*i + x*i*i*i
+            valor = k + x1*i + x2*i*i + 3*i*i*i
             evaluaciones.append((i, valor % p))
-        d = Descifrador(evaluaciones, b'asdfas')
+        d = Descifrador(evaluaciones, 'asdfas')
         self.assertEqual(d._get_key(), k)
 
 
