@@ -13,7 +13,7 @@ Para ver la documentación del programa ejecutar en un navegador web el archivo 
 
 ### Correr programa
 
-Despues de desempacar la carpeta Tarea03 te posicionas en la carpeta samir_secret_sharin/
+Hay que posicionarse en la carpeta samir_secret_sharing
 
 ```
 $ cd shamir_secret_sharing/
