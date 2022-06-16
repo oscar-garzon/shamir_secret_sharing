@@ -17,11 +17,17 @@ Hay que posicionarse en la carpeta samir_secret_sharing
 
 ```
 $ cd shamir_secret_sharing/
+```
 
-Cifrar:
+Para cifrar un archivo:
+
+```
 $ python src/main.py c [nombre archivo para guardar evaluaciones] [número de evaluaciones requeridas ] [número mínimo de puntos necesarios para descifrar] [nombre archivo con documento claro]
+```
 
-Descifrar:
+Para descifrar:
+
+```
 $ python src/main.py d [nombre de archivo con evaluaciones] [nombre del archivo cifrado]
 
 ```
