@@ -1,0 +1,2 @@
+class FragmentosFileError(Exception):
+    pass
