@@ -1,10 +1,11 @@
 from typing import List, Tuple
 from Crypto.Cipher import AES 
+from base64 import b64decode
 
 Punto = Tuple[int, int]
 
 class Descifrador():
-    def __init__(self, puntos: List[Punto], criptograma: str ):
+    def __init__(self, puntos: List[Punto], b64: str ):
         """! Constructor de la clase Descifrador.
         Cuando se llama al constructor se obtiene la llave para descifrar el
         criptograma.
@@ -14,26 +15,27 @@ class Descifrador():
         @param criptograma el path al documento encriptado"""
 
         self.puntos = puntos
-        self.criptograma = criptograma
+        self.b64 = b64
         self.key = self._get_key().to_bytes(32, byteorder='big')
 
 
 
 
-    def descifra(self) -> str:
-        """! Devuelve el contenido descifrado del criptograma
+    def descifra(self) -> Tuple[bytes, bytes]:
+        """! Devuelve el doc_claro en bytes y el header
 
-        @return el contenido descifrado del criptograma"""
-
-        file_in = open(self.criptograma, "rb")
-        nonce, tag, ciphertext = [ file_in.read(x) for x in (16, 16, -1) ]
-        file_in.close()
-
-        # let's assume that the key is somehow available again
-        cipher = AES.new(self.key, AES.MODE_EAX, nonce)
-        data = str(cipher.decrypt_and_verify(ciphertext, tag), 'utf-8')
-        return data
-
+        Lanza ValueError y KeyError si ocurre problemas
+        """
+        
+        json_k = [ 'nonce', 'header', 'ciphertext', 'tag' ]
+        jv = {k:b64decode(self.b64[k]) for k in json_k}
+        
+        cipher = AES.new(self.key, AES.MODE_GCM, nonce=jv['nonce'])
+        cipher.update(jv['header'])
+        plaintext = cipher.decrypt_and_verify(jv['ciphertext'], jv['tag'])
+        
+        return plaintext
+        
 
     def _get_key(self) -> int:
         """! Regresa la key necesaria para descifrar el criptograma.
